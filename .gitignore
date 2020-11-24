@@ -4,5 +4,6 @@ venv
 test_task/.idea
 test_task/db.sqlite3
 test_task/media
+test_task/static
 */*/__pycache__
 */*/*/__pycache__

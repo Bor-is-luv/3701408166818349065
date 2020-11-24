@@ -24,6 +24,7 @@ services:
       - 8080
     volumes:
       - ./test_task/media:/app/media
+      - ./test_task/static:/app/static
 
   nginx:
     build: ./nginx
