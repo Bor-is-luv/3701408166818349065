@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+
+  redis:
+    image: redis
+    restart: always
+    container_name: test_task_redis
+    command: redis-server
+    ports:
+      - '6379:6379'
+
+  test_task:
+    build: ./test_task
+    container_name: test_task
+    networks:
+      - default
+    depends_on:
+      - db
+      - redis
+      - rabbit
+    restart: always
+    expose:
+      - 8080
+    volumes:
+      - ./test_task/media:/app/media
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./test_task/media:/media_test_task
+      - ./test_task/static:/static
+
+  db:
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    image: postgres:latest
+    networks:
+      - default
+    ports:
+      - 5432:5432
+    restart: always
+
+  celery:
+    build:
+      context: ./test_task
+      dockerfile: Dockerfile-for-celery
+    container_name: test_task_celery
+    command: celery -A test_task worker -B
+    volumes:
+      - ./test_task/media:/app/media
+    links:
+      - redis
+    depends_on:
+      - test_task
+      - redis
+      - rabbit
+
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    restart: always
+    container_name: test_task_rabbit
+    ports:
+        - '5672:5672'

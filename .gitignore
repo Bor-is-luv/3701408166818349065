@@ -1,0 +1,8 @@
+venv
+.git
+.idea
+test_task/.idea
+test_task/db.sqlite3
+test_task/media
+*/*/__pycache__
+*/*/*/__pycache__
